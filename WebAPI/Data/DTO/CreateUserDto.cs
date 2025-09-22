@@ -20,8 +20,9 @@ namespace WebAPI.Data.DTO
         public string ConfirmPassword { get; set; }
 
         [Required]
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
 
+        
 
     }
 }

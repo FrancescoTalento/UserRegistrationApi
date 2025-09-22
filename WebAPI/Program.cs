@@ -1,4 +1,9 @@
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Data;
+using WebAPI.Data.Models;
+
 namespace WebAPI
 {
     public class Program
@@ -11,6 +16,18 @@ namespace WebAPI
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<UserDbContext>(options => 
+            {
+                string connection = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+                options.UseMySql(connection, ServerVersion.AutoDetect(connection));
+            });
+
+
+            builder.Services
+                .AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<UserDbContext>()
+                .AddDefaultTokenProviders();
 
             var app = builder.Build();
 
