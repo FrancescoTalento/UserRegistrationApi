@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.ComponentModel.DataAnnotations;
 using WebAPI.Data.DTO;
 using WebAPI.Data.Models;
 using WebAPI.Extensions;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -11,23 +15,24 @@ namespace WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<User> _userMangaer; 
+        private readonly RegisterService _registerService; 
 
-        public UserController(UserManager<User> userManager)
+        public UserController(RegisterService registerService)
         {
-            this._userMangaer = userManager;
+            this._registerService = registerService;
         }
 
         [HttpPost]
         [Route("signUp")]
         public async Task<IActionResult> RegisterUser(CreateUserDto? createUser)
         {
-            if(createUser == null) throw new ArgumentNullException(nameof(createUser));
-            var user = createUser.ToEntity();
+            if(createUser == null) return BadRequest();
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
 
-            IdentityResult result = await this._userMangaer.CreateAsync(user, createUser.Password);
 
-            if(result.Succeeded) { return Ok(User); };
+            bool result = await this._registerService.RegisterUser(createUser);
+
+            if(result) { return Ok(User); };
 
             return Problem("Error on registring new user");
         }

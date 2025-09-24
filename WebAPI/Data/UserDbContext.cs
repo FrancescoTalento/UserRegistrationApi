@@ -4,9 +4,9 @@ using WebAPI.Data.Models;
 
 namespace WebAPI.Data
 {
-    public class UserDbContext : IdentityDbContext<User>
+    public class UserDbContext(DbContextOptions<UserDbContext> options) : IdentityDbContext<User>(options)
     {
-        public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
+        //public UserDbContext(DbContextOptions<UserDbContext> options) : base(options) { }
         
             
         

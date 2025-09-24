@@ -22,6 +22,12 @@ namespace WebAPI
                 string connection = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
                 options.UseMySql(connection, ServerVersion.AutoDetect(connection));
             });
+            
+
+            //builder.Services
+            //    .AddDefaultIdentity<User>(
+            //        options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<UserDbContext>();
 
 
             builder.Services
