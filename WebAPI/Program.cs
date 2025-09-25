@@ -1,8 +1,10 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Authorization;
 using WebAPI.Data;
 using WebAPI.Data.Models;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -17,10 +19,22 @@ namespace WebAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddScoped<TokenService>();
+            builder.Services.AddScoped<UserService>();
+
             builder.Services.AddDbContext<UserDbContext>(options => 
             {
                 string connection = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
                 options.UseMySql(connection, ServerVersion.AutoDetect(connection));
+            });
+
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("MinimumAge", policy =>
+                {
+                    policy.AddRequirements(new MinimumAge(18));
+                });
             });
             
 
@@ -45,8 +59,8 @@ namespace WebAPI
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

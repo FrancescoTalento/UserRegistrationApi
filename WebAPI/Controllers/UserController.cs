@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -15,28 +16,39 @@ namespace WebAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly RegisterService _registerService; 
+        private readonly UserService userService;
+        
 
-        public UserController(RegisterService registerService)
+        public UserController(UserService userService)
         {
-            this._registerService = registerService;
+            this.userService = userService;
         }
 
         [HttpPost]
         [Route("signUp")]
-        public async Task<IActionResult> RegisterUser(CreateUserDto? createUser)
+        public async Task<IActionResult> RegisterUser([FromBody]CreateUserDto? createUser)
         {
-            if(createUser == null) return BadRequest();
-            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            await userService.RegisterUser(createUser);
 
-            bool result = await this._registerService.RegisterUser(createUser);
-
-            if(result) { return Ok(User); };
-
-            return Problem("Error on registring new user");
+            return Ok();
         }
-    }
+        
 
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> LoginUser(LoginUserDto? loginUserDto)
+        {
+            if (loginUserDto == null) return BadRequest();
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var token = await this.userService.LoginUser(loginUserDto);
+
+           return Ok(token);
+        }
+
+
+    }
 
 }
