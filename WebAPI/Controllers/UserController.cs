@@ -47,7 +47,13 @@ namespace WebAPI.Controllers
 
            return Ok(token);
         }
+        //[HttpPost]
+        //[Authorize]
+        //[Route("logOut")]
+        //public async Task<IActionResult> LogOutUser()
+        //{
 
+        //}
 
     }
 
